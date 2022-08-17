@@ -1,17 +1,9 @@
 import { createContext, useState, useMemo, useContext, useEffect } from "react";
 
+import { formatCurrency } from "../utilities";
 import { pricePerItem } from "../constants";
 
 const OrderDetails = createContext();
-
-//format number as currency
-function formatCurrency(amount) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2,
-  }).format(amount);
-}
 
 //create custom hook to check whether we are inside provider
 export function useOrderDetails() {
@@ -67,9 +59,16 @@ export function OrderDetailsProvider(props) {
       setOptionCounts(newOptionCounts);
     }
 
+    function resetOrder() {
+      setOptionCounts({
+        scoops: new Map(),
+        toppings: new Map(),
+      });
+    }
+
     //getter: object containing option counts for scoops and toppings, subtotals and totals
     //setter: update OptionCount
-    return [{ ...optionCounts, totals }, updateItemCount];
+    return [{ ...optionCounts, totals }, updateItemCount, resetOrder];
   }, [optionCounts, totals]);
   return <OrderDetails.Provider value={value} {...props} />;
 }
